@@ -5,10 +5,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class Tester {
+
+public class PipelineDemo {
 
     private static DataSource dataSource;
 
+    /**
+     * Initialize the required database connection based on the current context
+     * name.
+     * @param servletContext current servlet context
+     * @throws IOException
+     */
     public void initDBConnection(ServletContext servletContext) throws IOException {
 
         // get context name from servlet container.
@@ -27,7 +34,6 @@ public class Tester {
                 configFile = new File("myapp_live_config");
                 break;
             default:
-                configFile = null;
                 System.err.println("Config file error.");
                 return;
         }
@@ -40,6 +46,10 @@ public class Tester {
         dataSource = (DataSource) (new DataSourceFactory().createDataSource(properties));
     }
 
+    /**
+     * Get a connection from the connection pool.
+     * @return a connection instance
+     */
     public Connection getConnection(){
         if(dataSource == null){
             System.err.println("DB not initiated.");
@@ -48,7 +58,7 @@ public class Tester {
     }
 
     /**
-     * This function is in lowest-level java file.
+     * This function would be placed in the 1st level (the lowest level).
      * It handles a list of DB requests.
      */
     public List<Row> treat() {
@@ -74,7 +84,7 @@ public class Tester {
 
 
     /**
-     * This function is in 2nd-lowest-level java file.
+     * This function would be placed in the 2nd level.
      * It handles a stream of DB requests.
      */
     public void streamRows(HandlerRowList streamingHandler) {
@@ -83,17 +93,17 @@ public class Tester {
     }
 
 
+    /* The below two functions would be in the 3rd level. */
+
     /**
-     * These two functions are in 3rd-lowest-level java file.
      * Callback function will pass the parameter to the calling object.
-     *
      */
     public interface HandlerInteger {
         void callback(long countUserId);
     }
 
     /**
-     * 
+     * The stream method would handle the data pipeline logic.
      * @param productId
      * @param fromDate
      * @param toDateExclusive
